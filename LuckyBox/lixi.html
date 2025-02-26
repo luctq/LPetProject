@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+</head>
+
+<style type="text/css">
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  video {
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    opacity: 1;
+    z-index: -1;
+  }
+
+  .lucky-wheel__inner {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  border: 10px solid #ffcc00;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.lucky-wheel__inner__content {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform: rotate(0deg);
+  transition: transform 3s ease-in-out;
+  background-color: white;
+}
+
+.lucky-wheel__inner__content__item {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 100%);
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.lucky-wheel__inner__content__item p { position: absolute; top: 15%; left: 60%; transform: rotate(-60deg)}
+
+.lucky-wheel__inner__content__item:nth-child(1) { background: #ff5733; transform: rotate(0deg); }
+.lucky-wheel__inner__content__item:nth-child(2) { background: #ffbd33; transform: rotate(45deg); }
+.lucky-wheel__inner__content__item:nth-child(3) { background: #33ff57; transform: rotate(90deg); }
+.lucky-wheel__inner__content__item:nth-child(4) { background: #33aaff; transform: rotate(135deg); }
+.lucky-wheel__inner__content__item:nth-child(5) { background: #a833ff; transform: rotate(180deg); }
+.lucky-wheel__inner__content__item:nth-child(6) { background: #ff33a8; transform: rotate(225deg); }
+.lucky-wheel__inner__content__item:nth-child(7) { background: #ff3333; transform: rotate(270deg); }
+.lucky-wheel__inner__content__item:nth-child(8) { background: #33ffaa; transform: rotate(315deg); }
+
+
+</style>
+<body>
+  <video autoplay muted loop>
+    <source src="./assets/images/background.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <div class="container">
+    <h1>Chúc mừng năm mới Ất Tỵ 2025!</h1>
+      <div class="lucky-wheel__inner">
+        <div class="lucky-wheel__inner__content">
+          <div class="lucky-wheel__inner__content__item"><p>1</p></div>
+          <!-- <div class="lucky-wheel__inner__content__item"><p>1</p></div>
+            <div class="lucky-wheel__inner__content__item"><p>2</p></div>
+            <div class="lucky-wheel__inner__content__item"><p>3</p></div>
+            <div class="lucky-wheel__inner__content__item"><p>4</p></div>
+            <div class="lucky-wheel__inner__content__item"><p>5</p></div>
+            <div class="lucky-wheel__inner__content__item"><p>6</p></div>
+            <div class="lucky-wheel__inner__content__item"><p>7</p></div>
+            <div class="lucky-wheel__inner__content__item"><p>8</p></div> -->
+        </div>
+      </div>
+      <input type="text" id="add-wheel-item" value="0">
+      <button id="spinButton">Quay</button>
+  </div>
+
+</body>
+<script type="text/javascript">
+  const wheel = document.querySelector('.lucky-wheel__inner__content');
+  let currentRotation = 0;
+  let spinTime = 0;
+  let spinSpeed = 0;
+  let wheelItems = [];
+  const addWheelItemInput = document.getElementById('add-wheel-item');
+  addWheelItemInput.addEventListener('keydown', function(event) {
+      event.preventDefault();
+      if (event.key === 'Enter') {
+
+        console.log(event.target.value);
+        addWheelItem(event.target.value);
+      }
+  });
+  
+  function addWheelItem (text) {
+    wheelItems.push(text);
+    const wheelItemsLength = wheelItems.length;
+    console.log("wheelItemsLength", wheelItemsLength)
+    const wheelItemDegree = 360 / wheelItemsLength;
+    console.log("wheelItemDegree", wheelItemDegree)
+    console.log("Math.atan(wheelItemDegree)", Math.abs(Math.round(Math.tan(wheelItemDegree*Math.PI / 180))))
+    const scanLength = Math.abs(Math.round(Math.tan(wheelItemDegree*Math.PI / 180))) * 50; 
+    const item = document.createElement('div');
+    item.classList.add('lucky-wheel__inner__content__item');
+    item.textContent = text;
+    if (scanLength !== 0) {
+      item.style.clipPath = `polygon(50% 50%, 50% 0, ${scanLength}% 0)`;
+    }
+    item.style.backgroundColor = getRandomColor();
+
+    let wheelItemTags = document.querySelectorAll('.lucky-wheel__inner__content__item');
+    console.log("faskldfjdsf", wheelItemTags)
+    wheelItemTags.forEach((item, index) => {
+      if (scanLength !== 0) {
+        item.style.clipPath = `polygon(50% 50%, 50% 0, ${scanLength}% 0)`;
+      }
+      item.style.transform = `rotate(${wheelItemDegree * index}deg)`;
+    });
+    item.style.transform = `rotate(${wheelItemDegree * wheelItemsLength}deg)`;
+    wheel.appendChild(item);
+
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+  }
+
+  function spinWheel() {
+    spinTime = 0;
+    spinSpeed = 1000; // Chọn tốc độ ban đầu ngẫu nhiên
+    let totalRotation = 200; // Tổng số vòng quay
+    let deceleration = totalRotation / 100; // Giảm tốc dần
+
+    function rotate() {
+      if (spinSpeed > 10) {
+        spinSpeed -= deceleration; // Giảm tốc từ từ
+      } else {
+        spinSpeed = 0;
+        return;
+      }
+
+      currentRotation += spinSpeed;
+      wheel.style.transform = `rotate(${currentRotation}deg)`;
+      requestAnimationFrame(rotate);
+    }
+
+    rotate();
+  }
+
+  // Thêm sự kiện khi nhấn nút quay
+  document.getElementById('spinButton').addEventListener('click', spinWheel);
+</script>
+</html>
